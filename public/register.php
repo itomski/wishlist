@@ -31,12 +31,15 @@ try {
 
         $stmt->execute($data);
         if($dbh->lastInsertId() != null) {
-            echo 'User wurde gespeichert<br>';
-        }    
+            header('Location: index.php?a=login');
+        }
+        else {
+            header('Location: index.php?a=register');
+        }
     }
     else {
-        // TODO: Auf das Formular zurückspringen und Fehler anzeigen
-        print_r($validator->getErrors());
+        // TODO: Fehler im Formular anzeigen
+        header('Location: index.php?a=register');
     }
 }
 catch(ValidatorException $e) {
