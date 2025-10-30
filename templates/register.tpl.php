@@ -1,7 +1,5 @@
-<h1>Als Benutzer registrieren</h1>
-
 <form action="register.php" method="post">
-
+    <h1>Als Benutzer registrieren</h1>
     <div>
         <label for="name">Benutzername</label>
         <input type="text" name="name" id="name">

@@ -18,6 +18,7 @@ class Database {
 
         try {
             $this->dbh = new PDO($dsn, 'root', '');
+            $this->dbh->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         }
         catch(PDOException $e) {
             // TODO: Auf eine Errorpage umleiten

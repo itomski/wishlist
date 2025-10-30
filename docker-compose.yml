@@ -10,10 +10,19 @@ services:
       - ${PWD}:/var/www/html/
     command: >
       bash -c "docker-php-ext-install pdo pdo_mysql && apache2-foreground"
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    logging:
+      driver: 'none'
+    ports:
+      - 1025:1025
+      - 8025:8025
     
   composer:
     image: composer:latest
-    container_name: composer_installer
+    container_name: composer
     command: ["composer", "install"]
     volumes:
       - .:/app
