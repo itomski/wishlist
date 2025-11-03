@@ -1,13 +1,18 @@
 <?php
-session_start();
 
+
+/*
 use Wishlist\Database;
 use Wishlist\AccountUtils;
+*/
+use Wishlist\ORM\User;
+
+session_start();
 
 require_once '../vendor/autoload.php';
 
+/*
 $data = $_POST;
-
 $dbh = Database::getInstance()->getConnection();
 
 $sql = 'SELECT BIN_TO_UUID(id) AS id, name, password, created_at FROM users 
@@ -18,11 +23,16 @@ $stmt = $dbh->prepare($sql);
 $stmt->execute([$data['name']]);
 $stmt->setFetchMode(PDO::FETCH_ASSOC);
 $user = $stmt->fetch();
+*/
+
+$name = filter_input(INPUT_POST, 'name');
+$password = filter_input(INPUT_POST, 'password');
+$user = User::findByName($name);
 
 if($user != null) {
-    if(password_verify($data['password'], $user['password'])) {
-        unset($user['password']);
-        $_SESSION['user'] = $user;
+    if(password_verify($password, $user->getPassword())) {
+        $user->setPassword(null);
+        $_SESSION['user'] = serialize($user);
         header('Location: index.php'); // Umleitung auf die Startseite
     }
     else {

@@ -2,6 +2,8 @@
 
 namespace Wishlist;
 
+use \Wishlist\ORM\User;
+
 class AccountUtils {
 
     private function __construct()
@@ -17,6 +19,10 @@ class AccountUtils {
 
     public static function isLoggedIn(): bool {
         return isset($_SESSION['user']);
+    }
+
+    public static function getUser(): ?User {
+        return isset($_SESSION['user']) ? unserialize($_SESSION['user']) : null;
     }
 
     public static function logOut() {

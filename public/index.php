@@ -3,6 +3,8 @@
 use Wishlist\AccountUtils;
 use Wishlist\DataGateway;
 use Wishlist\DebugUtils;
+use Wishlist\ORM\Event;
+use Wishlist\ORM\User;
 
 session_start();
 
@@ -33,7 +35,8 @@ switch(strtolower($action)) {
 
     case 'events':
         AccountUtils::loginRequired();
-        $data = DataGateway::getAllEventsByUser($_SESSION['user']['id']);
+        //$data = DataGateway::getAllEventsByUser($_SESSION['user']['id']);
+        $data = Event::findByUser(AccountUtils::getUser());
         $subTpl = 'events.tpl.php';
         break;
 

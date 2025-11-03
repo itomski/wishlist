@@ -17,6 +17,7 @@ class DataGateway {
         return $stmt->fetchAll();
     }
 
+    /*
     public static function getAllEventsByUser(string $uuid): array {
         $sql = 'SELECT e.*, BIN_TO_UUID(id) AS id FROM events AS e WHERE user_id = UUID_TO_BIN(?)';
         $dbh = Database::getInstance()->getConnection();
@@ -24,4 +25,5 @@ class DataGateway {
         $stmt->execute([$uuid]);
         return $stmt->fetchAll();
     }
+    */
 }

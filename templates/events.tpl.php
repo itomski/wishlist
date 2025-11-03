@@ -6,9 +6,9 @@ use Wishlist\DataGateway;
 
  foreach($data as $element) { ?>
     <article>
-        <header><?= $element['name'] ?? '' ?></header>
-        <?= $element['description'] ?? '' ?><br>
-        <?= $element['start_at'] ?? '' ?>
+        <header><?= $element->getName() ?? '' ?></header>
+        <?= $element->getDescription() ?? '' ?><br>
+        <?= $element->getStartAt() ? date('d.m.y H:i', $element->getStartAt()) : '' ?>
     </article>
     <?php } ?>
 </div>
