@@ -3,12 +3,14 @@
     <?php
 
 use Wishlist\DataGateway;
+use Wishlist\ORM\Location;
 
  foreach($data as $element) { ?>
     <article>
         <header><?= $element->getName() ?? '' ?></header>
         <?= $element->getDescription() ?? '' ?><br>
         <?= $element->getStartAt() ? date('d.m.y H:i', $element->getStartAt()) : '' ?>
+        <a href="index.php?a=event&e=<?= $element->getId() ?>">Bearbeiten</a>
     </article>
     <?php } ?>
 </div>
@@ -31,8 +33,8 @@ use Wishlist\DataGateway;
                 <option selected disabled value="">
                     Wähle eine Location aus...
                 </option>
-                <?php foreach(DataGateway::getAllLocations() as $location) { ?>
-                    <option value="<?= $location['id'] ?>"><?= $location['name'].($location['city'] ? ', '.$location['city'] : '') ?></option>
+                <?php foreach(Location::all() as $location) { ?>
+                    <option value="<?= $location->id ?>"><?= $location->name.($location->city ? ', '.$location->city : '') ?></option>
                 <?php } ?>
             </select>
         </div>

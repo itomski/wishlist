@@ -2,14 +2,16 @@
 
 use BlakvGhost\PHPValidator\Validator;
 use BlakvGhost\PHPValidator\ValidatorException;
-use Wishlist\ORM\Location;
+use Wishlist\ORM\Song;
 
 require_once '../vendor/autoload.php';
 
 $data = $_POST;
 
 $rules = [
-    'name' => 'required|string|min:2|max:50'
+    'interpret' => 'required|string|min:2|max:50',
+    'title' => 'required|string|min:2|max:50',
+    'playlist_id' => 'required|string|min:2|max:50'
 ];
 
 try {
@@ -17,11 +19,11 @@ try {
 
     if($validator->isValid()) {
         
-        $location = new Location($data);
-        if($location->save()) {
-            header('Location: index.php?a=locations');
+        $song = new Song($data); // By playlist_id auch in die JOIN-Table speichern
+        if($song->save()) {
+            header('Location: index.php?a=songs&p='.$data['playlist_id']);
             die();
-        }    
+        }
     }
     else {
         // TODO: Auf das Formular zurückspringen und Fehler anzeigen

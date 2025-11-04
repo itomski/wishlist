@@ -4,6 +4,9 @@ use Wishlist\AccountUtils;
 use Wishlist\DataGateway;
 use Wishlist\DebugUtils;
 use Wishlist\ORM\Event;
+use Wishlist\ORM\Location;
+use Wishlist\ORM\Playlist;
+use Wishlist\ORM\Song;
 use Wishlist\ORM\User;
 
 session_start();
@@ -40,15 +43,31 @@ switch(strtolower($action)) {
         $subTpl = 'events.tpl.php';
         break;
 
+    case 'event':
+        AccountUtils::loginRequired();
+        $event_id = filter_input(INPUT_GET, 'e');
+        $event = Event::findById($event_id);
+        $data = Playlist::findByEvent($event); // TODO: implementieren
+        $subTpl = 'event.tpl.php';
+        break;
+
     case 'locations': 
         AccountUtils::loginRequired();
-        $data = DataGateway::getAllLocations();
+        $data = Location::all();
         $subTpl = 'locations.tpl.php';
         break;
 
     case 'playlists':
         AccountUtils::loginRequired();
+        $data = Playlist::allByCurrentUser();
         $subTpl = 'playlists.tpl.php';
+        break;
+
+    case 'songs':
+        AccountUtils::loginRequired();
+        $playlistId = filter_input(INPUT_GET, 'p');
+        $data = Song::allByPlaylist($playlistId);
+        $subTpl = 'songs.tpl.php';
         break;
 
     case 'logout': 

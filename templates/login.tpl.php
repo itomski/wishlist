@@ -15,7 +15,7 @@
             </small>
             <?php } ?>
         </div>
-        <button type="submit">Registrieren</button>
+        <button type="submit">Login</button>
     </form>
 </div>
 <div></div>

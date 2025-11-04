@@ -2,14 +2,11 @@
     <h1>Locations</h1>
     <?php foreach($data as $element) { ?>
     <article>
-        <header><?= $element['name'] ?? '' ?></header>
-        <?= $element['description'] ?? '' ?>
+        <header><?= $element->name ?? '' ?></header>
         <hr>
-        <?= $element['street'] ?? '' ?>
-        <?= $element['nr'] ?? '' ?><br>
-        <?= $element['zip'] ?? '' ?>
-        <?= $element['city'] ?? '' ?><br>
-        <?= $element['country'] ?? '' ?><br>
+        <?= $element->street ?? '' ?> <?= $element->nr ?? '' ?><br>
+        <?= $element->zip ?? '' ?><?= $element->city ?? '' ?><br>
+        <?= $element->country ?? '' ?><br>
     </article>
     <?php } ?>
 </div>

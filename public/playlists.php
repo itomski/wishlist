@@ -2,9 +2,11 @@
 
 use BlakvGhost\PHPValidator\Validator;
 use BlakvGhost\PHPValidator\ValidatorException;
-use Wishlist\ORM\Location;
+use Wishlist\ORM\Playlist;
 
 require_once '../vendor/autoload.php';
+
+session_start();
 
 $data = $_POST;
 
@@ -17,11 +19,11 @@ try {
 
     if($validator->isValid()) {
         
-        $location = new Location($data);
+        $location = new Playlist($data);
         if($location->save()) {
-            header('Location: index.php?a=locations');
+            header('Location: index.php?a=playlists');
             die();
-        }    
+        }
     }
     else {
         // TODO: Auf das Formular zurückspringen und Fehler anzeigen

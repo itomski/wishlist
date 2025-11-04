@@ -1,4 +1,10 @@
 <?php
+
+use Wishlist\ORM\User;
+use Wishlist\ORM\Event;
+use Wishlist\ORM\Location;
+
+require_once '../vendor/autoload.php';
 /*
 // DataMapper
 
@@ -54,6 +60,7 @@ $e->save();
 $events = Event::findAll();
 */
 
+/*
 use Wishlist\ORM\User;
 use Wishlist\ORM\Event;
 
@@ -70,4 +77,14 @@ $events = Event::findByUser($users[0]);
 echo '<pre>';
 print_r($events);
 echo '</pre>';
+*/
 
+echo '<pre>';
+$location = Location::find('87f416b0-11dc-432a-8636-ca0b2c5963e5');
+print_r($location);
+echo '</pre>';
+
+echo '<pre>';
+$locations = Location::all();
+print_r($locations);
+echo '</pre>';

@@ -2,6 +2,7 @@
 
 namespace Wishlist\ORM;
 
+use PDOException;
 use \Wishlist\Database;
 use Ramsey\Uuid\Uuid;
 use Wishlist\AccountUtils;
@@ -89,6 +90,12 @@ class Event {
         return $this;
     }
 
+    public function addPlaylist(Playlist $playlist)
+    {
+        $this->playlists[] = $playlist;
+        return $this;
+    }
+
     public function getUser(): ?User
     {
         return $this->user;
@@ -115,7 +122,7 @@ class Event {
                 'start_at' => ($this->startAt) ? date('y-m-d H:i:s',$this->startAt) : null ];
 
         if($this->location) {
-            $data['location_id'] = $this->location->getId();
+            $data['location_id'] = $this->location->id;
         }
        
         $data['id'] = Uuid::uuid4();
@@ -131,12 +138,43 @@ class Event {
         return false;
     }
 
+    public function savePlaylist(): bool {
+
+        if(count($this->playlists) > 0) {
+            try {
+                $dbh = Database::getInstance()->getConnection();
+
+                $sql = 'INSERT INTO playlists_to_events (playlist_id, event_id) 
+                            VALUES(UUID_TO_BIN(?), UUID_TO_BIN(?))';
+                
+                $stmt = $dbh->prepare($sql);
+                
+                foreach($this->playlists as $playlist) {
+                    $stmt->execute([$playlist->id, $this->getId()]);
+                }
+                return true;
+            }
+            catch(PDOException $e) {
+                print_r($e->errorInfo);
+                return false;
+            }
+        }
+        return false;
+    }
+
+
     use FindBy;
 
     public static function findByUser(User $user): array {
 
         $sql = 'SELECT e.*, BIN_TO_UUID(id) AS id FROM events AS e WHERE user_id = UUID_TO_BIN(?)';
         return self::findManyBy($sql, [$user->getId()]);
+    }
+
+    public static function findById(string $id): ?Event {
+
+        $sql = 'SELECT e.*, BIN_TO_UUID(id) AS id FROM events AS e WHERE e.id = UUID_TO_BIN(?)';
+        return self::findOneBy($sql, [$id]);
     }
 
     private static function fill(array $data): ?Event {

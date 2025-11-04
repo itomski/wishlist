@@ -2,113 +2,68 @@
 
 namespace Wishlist\ORM;
 
+use \Ramsey\Uuid\Uuid;
+use \Wishlist\Database;
+use \PDO;
+
 class Location {
 
-    // ID als Trait auslagern
-    private ?string $id = null;
-    private string $name;
-    private ?string $street;
-    private ?string $nr;
-    private ?string $zip;
-    private ?string $city;
-    private ?string $country;
+    // Erlaubte Attribute
+    private $attributes = ['id', 'name', 'street', 'nr', 'zip', 'city', 'country'];
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
+    use ActiveRecord;
 
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    public function getStreet(): ?string
-    {
-        return $this->street;
-    }
-
-    public function setStreet(?string $street)
-    {
-        $this->street = $street;
-        return $this;
-    }
-
-    public function getNr(): ?string
-    {
-        return $this->nr;
-    }
-
-    public function setNr(?string $nr)
-    {
-        $this->nr = $nr;
-        return $this;
-    }
-
-    public function getZip(): ?string
-    {
-        return $this->zip;
-    }
-
-    public function setZip(?string  $zip)
-    {
-        $this->zip = $zip;
-        return $this;
-    }
-
-    public function getCity(): ?string 
-    {
-        return $this->city;
-    }
-
-    public function setCity(?string $city)
-    {
-        $this->city = $city;
-        return $this;
-    }
-
-    public function getCountry(): ?string 
-    {
-        return $this->country;
-    }
-
-    public function setCountry(?string $country)
-    {
-        $this->country = $country;
-        return $this;
-    }
-
-    /*
     // CRUD
-    // Create
-    public function save();
+
+    // Create / Update
+    public function save() {
+
+        if(empty($this->data['id'])) {
+            $this->data['id'] = Uuid::uuid4();
+            $sql = 'INSERT INTO locations (id, name, street, nr, zip, city, country) 
+                        VALUES(UUID_TO_BIN(:id), :name, :street, :nr, :zip, :city, :country)';
+        }
+        else {
+            $sql = 'UPDATE locations SET name = :name, street = :street, nr = :nr,
+                        zip = :zip, city = :city, country = :country
+                        WHERE id = UUID_TO_BIN(:id)';
+        }
+
+        $dbh = Database::getInstance()->getConnection();
+        $stmt = $dbh->prepare($sql);
+        return $stmt->execute($this->data);
+    }
 
     // Read
-    public static function find(string $id);
-    public static function findByEvent(Event $event);
-    public static function findAll();
 
-    // Update
-    public function update();
+    public static function find(string $id): ?Location {
+
+        $sql = 'SELECT *, BIN_TO_UUID(id) AS id FROM locations WHERE BIN_TO_UUID(id) = :id';
+        $dbh = Database::getInstance()->getConnection();
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchObject(__CLASS__); // Fragt einen Datensatz ab
+    }
+
+    public static function all(): array {
+
+        $sql = 'SELECT *, BIN_TO_UUID(id) AS id FROM locations';
+        $dbh = Database::getInstance()->getConnection();
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_CLASS, __CLASS__);
+    }
 
     // Delete
-    public function delete();
-    */
+    public static function delete(string $id) {
+
+        $sql = 'DELETE FROM locations WHERE BIN_TO_UUID(id) = :id';
+        $dbh = Database::getInstance()->getConnection();
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_STR);
+        if($stmt->execute()) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+    }
 }
