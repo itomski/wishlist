@@ -2,10 +2,11 @@
 
 namespace Wishlist\ORM;
 
+use JsonSerializable;
 use \Wishlist\Database;
 use \Ramsey\Uuid\Uuid;
 
-class User {
+class User implements JsonSerializable {
 
     private ?string $id = null;
     private string $name;
@@ -150,5 +151,11 @@ class User {
             return $user;
         }
         return null;
+    }
+
+    public function jsonSerialize(): array {
+        $arr = get_object_vars($this);
+        unset($arr['password']);
+        return $arr;
     }
 }

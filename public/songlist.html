@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/pico.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <button id="updateBtn">Update</button>
+        </div>
+
+        <div id="output">
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('updateBtn').addEventListener('click', event => {
+            requestData();
+        });
+
+        setTimeout(requestData, 1000);
+
+        function requestData() {
+            fetch('api.php') // Frage die API an
+                .then(res => {
+                    return res.json();
+                })
+                .then(json => {
+                    output = document.getElementById('output');
+                    output.innerHTML = jsonToTable(json);
+                });
+        }
+
+
+        function jsonToTable(json) {
+            let cols = Object.keys(json[0]);
+
+            let tableHeader = cols.map(col => `<th>${col}</th>`).join("");
+
+            let tableRows = json.map(row => {
+                let cells = cols.map(col => `<td>${row[col]}</td>`).join("");
+                return `<tr>${cells}</tr>`;
+            }).join("");
+
+            const table = `<table>
+                    <thead>
+                        ${tableHeader}
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>`;
+
+            return table;
+        }
+    </script>
+</body>
+</html>

@@ -2,6 +2,7 @@
 
 use Wishlist\AccountUtils;
 use Wishlist\DataGateway;
+use Wishlist\DataUtils;
 use Wishlist\DebugUtils;
 use Wishlist\ORM\Event;
 use Wishlist\ORM\Location;
@@ -13,32 +14,21 @@ session_start();
 
 require_once '../vendor/autoload.php';
 
-$action = filter_input(INPUT_GET, 'a') ?? '';
+DataUtils::init();
 
-/*
-$subTpl = match(strtolower($action)) {
-    'login' => 'login.tpl.php',
-    'register' => 'register.tpl.php',
-    'events' => 'events.tpl.php',
-    'locations' => 'locations.tpl.php',
-    'playlists' => 'playlists.tpl.php',
-    'logout' => AccountUtils::logOut(),
-    default => 'welcome.tpl.php'
-};
-*/
+$action = filter_input(INPUT_GET, 'a') ?? '';
 
 switch(strtolower($action)) {
     case 'login': 
         $subTpl = 'login.tpl.php';
         break;
 
-    case 'register': 
+    case 'register':
         $subTpl = 'register.tpl.php';
         break;
 
     case 'events':
         AccountUtils::loginRequired();
-        //$data = DataGateway::getAllEventsByUser($_SESSION['user']['id']);
         $data = Event::findByUser(AccountUtils::getUser());
         $subTpl = 'events.tpl.php';
         break;
@@ -47,8 +37,17 @@ switch(strtolower($action)) {
         AccountUtils::loginRequired();
         $event_id = filter_input(INPUT_GET, 'e');
         $event = Event::findById($event_id);
-        $data = Playlist::findByEvent($event); // TODO: implementieren
+        $data = Playlist::allByEvent($event);
         $subTpl = 'event.tpl.php';
+        break;
+
+    case 'remove': 
+        AccountUtils::loginRequired();
+        $playlist_id = filter_input(INPUT_GET, 'p');
+        $event_id = filter_input(INPUT_GET, 'e');
+        Playlist::deleteFromEvent($playlist_id, $event_id);
+        header('Location: index.php?a=event&e='.$event_id);
+        die();    
         break;
 
     case 'locations': 

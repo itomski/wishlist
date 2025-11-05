@@ -2,12 +2,13 @@
 
 namespace Wishlist\ORM;
 
+use JsonSerializable;
 use PDOException;
 use \Wishlist\Database;
 use Ramsey\Uuid\Uuid;
 use Wishlist\AccountUtils;
 
-class Event {
+class Event implements JsonSerializable {
 
     private ?string $id = null;
     private string $name;
@@ -177,6 +178,12 @@ class Event {
         return self::findOneBy($sql, [$id]);
     }
 
+    public static function findAll(): array {
+
+        $sql = 'SELECT e.*, BIN_TO_UUID(id) AS id FROM events e';
+        return self::findManyBy($sql, []);
+    }
+
     private static function fill(array $data): ?Event {
         if($data) {
             $event = new Event($data['name']);
@@ -184,13 +191,15 @@ class Event {
             $event->setDescription($data['description']);
             $event->setStartAt($data['start_at'] ? strtotime($data['start_at']) : null);
             // TODO: Playlist, User, Location hinzufügen
-            /*
-            $event->setLocation(); 
-            $event->setPlaylists();
-            $event->setUser();
-            */
+            //$event->setLocation(); 
+            //$event->setPlaylists();
+            //$event->setUser();
             return $event;
         }
         return null;
+    }
+
+    public function jsonSerialize(): array {
+        return get_object_vars($this);
     }
 }

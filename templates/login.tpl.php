@@ -1,6 +1,15 @@
 <div>
     <h1>Login</h1>
+    <?php
 
+    use Wishlist\DataUtils;
+
+    if(DataUtils::hasMessages()) {
+        foreach(DataUtils::getMessages() as $msg) {
+            echo '<p>'.$msg.'</p>';
+        }
+    }
+    ?>
     <form action="login.php" method="post">
         <div>
             <label for="name">Benutzername</label>

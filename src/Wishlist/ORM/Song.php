@@ -2,12 +2,13 @@
 
 namespace Wishlist\ORM;
 
+use JsonSerializable;
 use \Wishlist\Database;
 use \Ramsey\Uuid\Uuid;
 use \PDO;
 use PDOException;
 
-class Song {
+class Song implements JsonSerializable {
 
     private $attributes = ['id', 'interpret', 'title', 'playlist_id'];
 
@@ -95,8 +96,12 @@ class Song {
         $dbh = Database::getInstance()->getConnection();
         $stmt = $dbh->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_STR);
-        if($stmt->execute()) {
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        }
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    public function jsonSerialize(): array {
+        $arr = get_object_vars($this);
+        return $arr['data'];
     }
 }

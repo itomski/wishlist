@@ -1,5 +1,11 @@
 <div>
     <h1>Event</h1>
+    <article>
+        <?= $event->getName() ?? '' ?><br>
+        <?= $event->getDescription() ?? '' ?><br>
+        <?= $event->getStartAt() ?? '' ?>
+    </article>
+    <hr>
     <h2>Verwendete Playlisten:</h2>
     <?php
 
@@ -7,8 +13,8 @@ use Wishlist\ORM\Playlist;
 
  foreach($data as $element) { ?>
         <article>
-            <?= $element->getName() ?? '' ?>
-            <a href="#">ENTFERNEN</a>
+            <?= $element->name ?? '' ?> (<?= $element->type ?? '' ?>) <br>
+            <a href="index.php?a=remove&e=<?= $event->getId() ?>&p=<?= $element->id ?>">ENTFERNEN</a>
         </article>
     <?php } ?>
 </div>

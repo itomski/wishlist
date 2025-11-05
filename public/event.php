@@ -23,6 +23,7 @@ try {
         $event = Event::findById($data['event_id']);
         $playlist = Playlist::find($data['playlist_id']);
 
+        // TODO: Nur speichern, wenn nicht bereits vorhanden
         $event->addPlaylist($playlist);
 
         if($event->savePlaylist()) {

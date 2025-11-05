@@ -2,6 +2,7 @@
 
 namespace Wishlist\ORM;
 
+use JsonSerializable;
 use \Ramsey\Uuid\Uuid;
 use \Wishlist\Database;
 use \PDO;
@@ -9,7 +10,7 @@ use Wishlist\AccountUtils;
 
 
 
-class Playlist {
+class Playlist implements JsonSerializable {
 
     private $attributes = ['id', 'name', 'type', 'user_id'];
 
@@ -67,6 +68,20 @@ class Playlist {
         return $stmt->fetchAll(PDO::FETCH_CLASS, __CLASS__);
     }
 
+    public static function allByEvent(Event $event): array {
+
+        $sql = 'SELECT p.name, p.type, BIN_TO_UUID(p.id) AS id 
+                FROM playlists_to_events LEFT JOIN playlists p ON playlists_to_events.playlist_id = p.id 
+                WHERE BIN_TO_UUID(playlists_to_events.event_id) = :event_id';
+
+        $dbh = Database::getInstance()->getConnection();
+        $stmt = $dbh->prepare($sql);
+        $event_id = $event->getId();
+        $stmt->bindParam(':event_id', $event_id, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_CLASS, __CLASS__);
+    }
+
     // Delete
     public static function delete(string $id) {
 
@@ -79,4 +94,26 @@ class Playlist {
         }
     }
 
+    public static function deleteFromEvent(string $playlist_id, string $event_id) {
+
+        $sql = 'DELETE FROM playlists_to_events 
+                    WHERE BIN_TO_UUID(playlist_id) = :playlist_id 
+                    AND BIN_TO_UUID(event_id) = :event_id
+                    LIMIT 1';
+
+        $dbh = Database::getInstance()->getConnection();
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(':playlist_id', $playlist_id, PDO::PARAM_STR);
+        $stmt->bindParam(':event_id', $event_id, PDO::PARAM_STR);
+        if($stmt->execute()) {
+            return $stmt->rowCount() > 0; // rowCount = Anzahl betroffener Datensätze
+        }
+    }
+
+    // TODO: Status der Songs bearbeiten
+    // TODO: Hinzufügen durch Partybesucher ermöglichen
+
+    public function jsonSerialize(): array {
+        return get_object_vars($this);
+    }
 }

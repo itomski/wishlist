@@ -2,11 +2,12 @@
 
 namespace Wishlist\ORM;
 
+use JsonSerializable;
 use \Ramsey\Uuid\Uuid;
 use \Wishlist\Database;
 use \PDO;
 
-class Location {
+class Location implements JsonSerializable {
 
     // Erlaubte Attribute
     private $attributes = ['id', 'name', 'street', 'nr', 'zip', 'city', 'country'];
@@ -65,5 +66,9 @@ class Location {
         if($stmt->execute()) {
             return $stmt->fetch(PDO::FETCH_ASSOC);
         }
+    }
+
+    public function jsonSerialize(): array {
+        return get_object_vars($this);
     }
 }
